@@ -74,19 +74,36 @@ https://maps.google.com/?q=${resolvedLatitude},${resolvedLongitude}`,
     }
 
     try {
-        const { error } = await resend.emails.send(mail)
+        console.log(
+            `Preparing visitor alert: ip=${ip}, source=${locationSource}, ` +
+            `latitude=${resolvedLatitude}, longitude=${resolvedLongitude}, ` +
+            `area=${locationDetails || "n/a"}, to=${process.env.ALERT_EMAIL_TO}`
+        )
+
+        const { data, error } = await resend.emails.send(mail)
 
         if (error) {
-            console.error("Failed to send email:", error.message)
+            console.error(
+                `Failed to send email: ip=${ip}, source=${locationSource}, ` +
+                `to=${process.env.ALERT_EMAIL_TO}, error=${error.message}`
+            )
 
             return res.status(502).json({
                 error: "Failed to send email."
             })
         }
 
+        console.log(
+            `Visitor alert sent: id=${data?.id || "unknown"}, ip=${ip}, ` +
+            `source=${locationSource}, to=${process.env.ALERT_EMAIL_TO}`
+        )
+
         res.status(200).json({ message: "Sent" })
     } catch (error) {
-        console.error("Failed to send email:", error.message)
+        console.error(
+            `Failed to send email: ip=${ip}, source=${locationSource}, ` +
+            `to=${process.env.ALERT_EMAIL_TO}, error=${error.message}`
+        )
         res.status(502).json({
             error: "Failed to send email."
         })
