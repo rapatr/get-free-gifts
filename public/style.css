@@ -1,13 +1,308 @@
 body{
-font-family: Arial;
-background:#111;
-color:white;
+margin:0;
+font-family:"Trebuchet MS",sans-serif;
+background:
+radial-gradient(circle at top,#3a2a14 0%,#191511 28%,#0c0c0c 65%,#050505 100%);
+color:#f3efe4;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
+min-height:100vh;
+overflow:hidden;
 }
 
 .container{
+width:min(92vw,540px);
 text-align:center;
+padding:32px 20px;
+}
+
+.scene{
+position:relative;
+height:220px;
+margin-bottom:22px;
+border:2px solid rgba(255,255,255,.12);
+border-radius:22px;
+background:
+linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0)),
+linear-gradient(180deg,#161616 0%,#101010 100%);
+box-shadow:0 25px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+overflow:hidden;
+}
+
+.scene::before{
+content:"";
+position:absolute;
+inset:0;
+background-image:
+linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+background-size:24px 24px;
+mask-image:linear-gradient(180deg,rgba(0,0,0,.5),transparent 80%);
+}
+
+.sun{
+position:absolute;
+top:28px;
+right:36px;
+width:18px;
+height:18px;
+border-radius:50%;
+background:#f6c453;
+box-shadow:0 0 30px rgba(246,196,83,.35);
+animation:sunPulse 2.4s ease-in-out infinite;
+}
+
+.dino-wrap{
+position:absolute;
+left:76px;
+bottom:50px;
+width:120px;
+height:120px;
+animation:dinoHop 1s steps(1,end) infinite;
+}
+
+.dino{
+--pixel:8px;
+position:absolute;
+left:0;
+bottom:0;
+width:var(--pixel);
+height:var(--pixel);
+background:#f4efe2;
+box-shadow:
+calc(var(--pixel) * 4) 0 #f4efe2,
+calc(var(--pixel) * 5) 0 #f4efe2,
+calc(var(--pixel) * 6) 0 #f4efe2,
+calc(var(--pixel) * 7) 0 #f4efe2,
+calc(var(--pixel) * 8) 0 #f4efe2,
+calc(var(--pixel) * 9) 0 #f4efe2,
+calc(var(--pixel) * 3) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 4) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -1) #f4efe2,
+calc(var(--pixel) * 2) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 3) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 4) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -2) #f4efe2,
+calc(var(--pixel) * 2) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 3) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 4) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -3) #f4efe2,
+calc(var(--pixel) * 2) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 3) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 4) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -4) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 12) calc(var(--pixel) * -5) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -6) #f4efe2,
+calc(var(--pixel) * 5) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 6) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 12) calc(var(--pixel) * -7) #f4efe2,
+calc(var(--pixel) * 7) calc(var(--pixel) * -8) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -8) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -8) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -8) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -8) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -9) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * -9) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -9) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -9) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * -10) #f4efe2,
+calc(var(--pixel) * 11) calc(var(--pixel) * -10) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * -8) #111,
+calc(var(--pixel) * 11) calc(var(--pixel) * -11) #f4efe2,
+calc(var(--pixel) * 3) calc(var(--pixel) * 1) #f4efe2,
+calc(var(--pixel) * 4) calc(var(--pixel) * 1) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * 1) #f4efe2,
+calc(var(--pixel) * 9) calc(var(--pixel) * 1) #f4efe2,
+calc(var(--pixel) * 2) calc(var(--pixel) * 2) #f4efe2,
+calc(var(--pixel) * 4) calc(var(--pixel) * 2) #f4efe2,
+calc(var(--pixel) * 8) calc(var(--pixel) * 2) #f4efe2,
+calc(var(--pixel) * 10) calc(var(--pixel) * 2) #f4efe2;
+image-rendering:pixelated;
+}
+
+.dino::after{
+content:"";
+position:absolute;
+left:24px;
+top:76px;
+width:8px;
+height:16px;
+background:#f4efe2;
+box-shadow:40px 0 #f4efe2;
+animation:legKick 1s steps(1,end) infinite;
+}
+
+.cactus{
+position:absolute;
+right:72px;
+bottom:48px;
+width:14px;
+height:56px;
+background:#cfd86f;
+box-shadow:
+10px 0 #cfd86f,
+0 -10px #cfd86f,
+10px -10px #cfd86f,
+0 -20px #cfd86f,
+10px -20px #cfd86f,
+0 -30px #cfd86f,
+10px -30px #cfd86f,
+-10px -14px #cfd86f,
+-10px -24px #cfd86f,
+20px -18px #cfd86f,
+20px -28px #cfd86f;
+animation:cactusMove 1.6s linear infinite;
+}
+
+.ground{
+position:absolute;
+left:0;
+right:0;
+bottom:36px;
+height:4px;
+background:repeating-linear-gradient(
+90deg,
+#f0eadc 0 18px,
+transparent 18px 34px,
+rgba(240,234,220,.85) 34px 54px,
+transparent 54px 70px
+);
+animation:groundMove .9s linear infinite;
+}
+
+.loading-title{
+margin:0;
+font-size:clamp(2rem,5vw,3rem);
+letter-spacing:.08em;
+text-transform:uppercase;
+color:#f7f1df;
+text-shadow:0 0 18px rgba(255,232,168,.18);
+animation:titlePulse 1.2s ease-in-out infinite;
+}
+
+.dots::after{
+content:"";
+display:inline-block;
+width:1.2em;
+text-align:left;
+animation:dots 1.4s steps(4,end) infinite;
+}
+
+.loading-subtitle{
+margin:12px 0 0;
+font-size:.95rem;
+letter-spacing:.18em;
+text-transform:uppercase;
+color:rgba(243,239,228,.6);
+animation:subtitleBlink 1.8s steps(2,end) infinite;
+}
+
+@keyframes dinoHop{
+0%,100%{transform:translateY(0);}
+20%{transform:translateY(-6px);}
+45%{transform:translateY(-34px);}
+55%{transform:translateY(-34px);}
+80%{transform:translateY(0);}
+}
+
+@keyframes legKick{
+0%,100%{transform:translateX(0);}
+50%{transform:translateX(8px);}
+}
+
+@keyframes cactusMove{
+from{transform:translateX(140px);}
+to{transform:translateX(-420px);}
+}
+
+@keyframes groundMove{
+from{background-position:0 0;}
+to{background-position:-70px 0;}
+}
+
+@keyframes dots{
+0%{content:"";}
+25%{content:".";}
+50%{content:"..";}
+75%{content:"...";}
+100%{content:"";}
+}
+
+@keyframes titlePulse{
+0%,100%{opacity:1;transform:translateY(0);}
+50%{opacity:.74;transform:translateY(1px);}
+}
+
+@keyframes subtitleBlink{
+0%,100%{opacity:.45;}
+50%{opacity:.9;}
+}
+
+@keyframes sunPulse{
+0%,100%{transform:scale(1);}
+50%{transform:scale(1.08);}
+}
+
+@media (max-width:600px){
+.scene{
+height:180px;
+}
+
+.dino-wrap{
+left:30px;
+transform:scale(.82);
+transform-origin:left bottom;
+}
+
+.cactus{
+right:30px;
+transform:scale(.9);
+transform-origin:bottom right;
+}
+
+.ground{
+bottom:28px;
+}
 }
