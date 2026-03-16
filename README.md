@@ -2,6 +2,15 @@
 
 Simple Express app that serves the frontend from `public/` and emails visitor location data through Gmail.
 
+## Gmail Notes
+
+For Gmail, use an App Password instead of your normal account password. A regular Gmail password usually fails on hosted services like Render.
+
+- `EMAIL_USER`: your Gmail address
+- `EMAIL_PASS`: your 16-character Gmail App Password
+
+If these values are missing or Gmail rejects authentication, the app will still boot on Render, but `/send-location` will return `503` until mail is configured correctly.
+
 ## Local run
 
 1. Install dependencies:
@@ -52,5 +61,10 @@ git push -u origin main
 
 - `EMAIL_USER`
 - `EMAIL_PASS`
+
+5. After deploy, open `/healthz` on your Render URL.
+
+- `status: "ok"` and `mailReady: true` means the app and Gmail transport are ready.
+- `status: "degraded"` or `mailReady: false` means the web service is running, but email is not ready yet.
 
 You can also deploy with the included `render.yaml` blueprint.
