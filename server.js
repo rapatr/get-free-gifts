@@ -1,20 +1,20 @@
 const express = require("express")
-const nodemailer = require("nodemailer")
+const { Resend } = require("resend")
 require("dotenv").config()
 
 const app = express()
 const PORT = Number(process.env.PORT) || 3000
-const REQUIRED_ENV_VARS = ["EMAIL_USER", "EMAIL_PASS"]
+const REQUIRED_ENV_VARS = ["RESEND_API_KEY", "EMAIL_FROM", "ALERT_EMAIL_TO"]
 const missingEnvVars = REQUIRED_ENV_VARS.filter((key) => !process.env[key])
 
-let transporter = null
-let mailReady = false
+let resend = null
+const mailReady = missingEnvVars.length === 0
 
 app.use(express.json())
 app.use(express.static("public"))
 
 app.get("/healthz", (req, res) => {
-    const status = missingEnvVars.length === 0 && mailReady ? "ok" : "degraded"
+    const status = mailReady ? "ok" : "degraded"
 
     res.status(200).json({
         status,
@@ -24,7 +24,7 @@ app.get("/healthz", (req, res) => {
 })
 
 app.post("/send-location", async (req, res) => {
-    if (!mailReady || !transporter) {
+    if (!mailReady || !resend) {
         return res.status(503).json({
             error: "Email service is not configured correctly."
         })
@@ -43,23 +43,31 @@ app.post("/send-location", async (req, res) => {
     }
 
     const mail = {
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER,
+        from: process.env.EMAIL_FROM,
+        to: process.env.ALERT_EMAIL_TO,
         subject: "Visitor Alert",
-        text: `
-New Visitor
+        text: `New Visitor
 
 IP: ${ip}
 Latitude: ${latitude}
 Longitude: ${longitude}
 
 Google Maps:
-https://maps.google.com/?q=${latitude},${longitude}
-`
+https://maps.google.com/?q=${latitude},${longitude}`,
+        replyTo: process.env.ALERT_EMAIL_TO
     }
 
     try {
-        await transporter.sendMail(mail)
+        const { error } = await resend.emails.send(mail)
+
+        if (error) {
+            console.error("Failed to send email:", error.message)
+
+            return res.status(502).json({
+                error: "Failed to send email."
+            })
+        }
+
         res.status(200).json({ message: "Sent" })
     } catch (error) {
         console.error("Failed to send email:", error.message)
@@ -70,27 +78,8 @@ https://maps.google.com/?q=${latitude},${longitude}
 })
 
 if (missingEnvVars.length === 0) {
-    transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 20000
-    })
-
-    transporter.verify()
-        .then(() => {
-            mailReady = true
-            console.log("Mail transporter verified successfully.")
-        })
-        .catch((error) => {
-            console.error("Mail transporter verification failed:", error.message)
-        })
+    resend = new Resend(process.env.RESEND_API_KEY)
+    console.log("Resend email client configured.")
 } else {
     console.warn(
         `Missing required environment variables: ${missingEnvVars.join(", ")}`

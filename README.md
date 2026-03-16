@@ -1,15 +1,16 @@
 # visitor-tracker
 
-Simple Express app that serves the frontend from `public/` and emails visitor location data through Gmail.
+Simple Express app that serves the frontend from `public/` and emails visitor location data through Resend.
 
-## Gmail Notes
+## Email Setup
 
-For Gmail, use an App Password instead of your normal account password. A regular Gmail password usually fails on hosted services like Render.
+For production on Render, use an email API with a verified sender domain. This project is configured for Resend.
 
-- `EMAIL_USER`: your Gmail address
-- `EMAIL_PASS`: your 16-character Gmail App Password
+- `RESEND_API_KEY`: your Resend API key
+- `EMAIL_FROM`: a verified sender address, for example `alerts@yourdomain.com`
+- `ALERT_EMAIL_TO`: the inbox that should receive visitor alerts
 
-If these values are missing or Gmail rejects authentication, the app will still boot on Render, but `/send-location` will return `503` until mail is configured correctly.
+If these values are missing, the app will still boot on Render, but `/send-location` will return `503` until email is configured correctly.
 
 ## Local run
 
@@ -22,8 +23,9 @@ npm install
 2. Create a `.env` file:
 
 ```env
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
+RESEND_API_KEY=your-resend-api-key
+EMAIL_FROM=alerts@yourdomain.com
+ALERT_EMAIL_TO=you@example.com
 ```
 
 3. Start the server:
@@ -59,12 +61,13 @@ git push -u origin main
 
 4. Add these environment variables in Render:
 
-- `EMAIL_USER`
-- `EMAIL_PASS`
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+- `ALERT_EMAIL_TO`
 
 5. After deploy, open `/healthz` on your Render URL.
 
-- `status: "ok"` and `mailReady: true` means the app and Gmail transport are ready.
+- `status: "ok"` and `mailReady: true` means the app is configured to send email.
 - `status: "degraded"` or `mailReady: false` means the web service is running, but email is not ready yet.
 
 You can also deploy with the included `render.yaml` blueprint.
