@@ -10,6 +10,7 @@ const missingEnvVars = REQUIRED_ENV_VARS.filter((key) => !process.env[key])
 let resend = null
 const mailReady = missingEnvVars.length === 0
 
+app.set("trust proxy", true)
 app.use(express.json())
 app.use(express.static("public"))
 
@@ -30,16 +31,29 @@ app.post("/send-location", async (req, res) => {
         })
     }
 
-    const { ip, latitude, longitude } = req.body
+    const { latitude, longitude } = req.body
+    const ip = getClientIp(req)
+    let resolvedLatitude = latitude
+    let resolvedLongitude = longitude
+    let locationSource = "browser-geolocation"
+    let locationDetails = ""
 
     if (
-        typeof ip !== "string" ||
-        typeof latitude !== "number" ||
-        typeof longitude !== "number"
+        typeof resolvedLatitude !== "number" ||
+        typeof resolvedLongitude !== "number"
     ) {
-        return res.status(400).json({
-            error: "Request body must include ip, latitude, and longitude."
-        })
+        const ipLocation = await lookupIpLocation(ip)
+
+        if (!ipLocation) {
+            return res.status(502).json({
+                error: "Failed to determine visitor location."
+            })
+        }
+
+        resolvedLatitude = ipLocation.latitude
+        resolvedLongitude = ipLocation.longitude
+        locationSource = "ip-fallback"
+        locationDetails = formatLocationDetails(ipLocation)
     }
 
     const mail = {
@@ -49,11 +63,13 @@ app.post("/send-location", async (req, res) => {
         text: `New Visitor
 
 IP: ${ip}
-Latitude: ${latitude}
-Longitude: ${longitude}
+Location Source: ${locationSource}
+Latitude: ${resolvedLatitude}
+Longitude: ${resolvedLongitude}
+${locationDetails ? `Approximate Area: ${locationDetails}\n` : ""}
 
 Google Maps:
-https://maps.google.com/?q=${latitude},${longitude}`,
+https://maps.google.com/?q=${resolvedLatitude},${resolvedLongitude}`,
         replyTo: process.env.ALERT_EMAIL_TO
     }
 
@@ -89,3 +105,59 @@ if (missingEnvVars.length === 0) {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+
+function getClientIp(req) {
+    const forwardedFor = req.headers["x-forwarded-for"]
+
+    if (typeof forwardedFor === "string" && forwardedFor.length > 0) {
+        return sanitizeIp(forwardedFor.split(",")[0].trim())
+    }
+
+    return sanitizeIp(req.ip || "unknown")
+}
+
+function sanitizeIp(value) {
+    return value.replace(/^::ffff:/, "")
+}
+
+async function lookupIpLocation(ip) {
+    if (!ip || ip === "unknown") {
+        return null
+    }
+
+    try {
+        const response = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`)
+
+        if (!response.ok) {
+            console.error(`IP lookup failed with status ${response.status}`)
+            return null
+        }
+
+        const data = await response.json()
+
+        const latitude = Number(data.latitude)
+        const longitude = Number(data.longitude)
+
+        if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+            console.error("IP lookup did not return coordinates.")
+            return null
+        }
+
+        return {
+            latitude,
+            longitude,
+            city: data.city,
+            region: data.region,
+            country: data.country_name
+        }
+    } catch (error) {
+        console.error("IP lookup failed:", error.message)
+        return null
+    }
+}
+
+function formatLocationDetails(location) {
+    return [location.city, location.region, location.country]
+        .filter(Boolean)
+        .join(", ")
+}

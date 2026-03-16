@@ -12,6 +12,8 @@ For production on Render, use an email API with a verified sender domain. This p
 
 If these values are missing, the app will still boot on Render, but `/send-location` will return `503` until email is configured correctly.
 
+If a visitor denies browser geolocation, the server falls back to approximate IP-based location. This is much less precise than GPS/browser location and is usually accurate only to a city or nearby area.
+
 ## Local run
 
 1. Install dependencies:
