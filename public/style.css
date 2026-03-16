@@ -239,6 +239,48 @@ color:rgba(243,239,228,.6);
 animation:subtitleBlink 1.8s steps(2,end) infinite;
 }
 
+.mobile-prompt{
+margin:20px auto 0;
+max-width:320px;
+padding:16px 16px 14px;
+border:1px solid rgba(255,255,255,.14);
+border-radius:18px;
+background:rgba(255,255,255,.06);
+box-shadow:0 14px 36px rgba(0,0,0,.24);
+}
+
+.prompt-copy{
+margin:0 0 12px;
+font-size:.92rem;
+line-height:1.5;
+color:rgba(243,239,228,.88);
+}
+
+.prompt-button{
+border:0;
+border-radius:999px;
+padding:12px 18px;
+font:inherit;
+font-weight:700;
+letter-spacing:.08em;
+text-transform:uppercase;
+color:#18130c;
+background:linear-gradient(180deg,#f8d57a 0%,#e7ab39 100%);
+box-shadow:0 10px 24px rgba(231,171,57,.28);
+cursor:pointer;
+transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
+}
+
+.prompt-button:hover{
+transform:translateY(-1px);
+box-shadow:0 14px 28px rgba(231,171,57,.34);
+}
+
+.prompt-button:disabled{
+opacity:.7;
+cursor:wait;
+}
+
 @keyframes dinoHop{
 0%,100%{transform:translateY(0);}
 20%{transform:translateY(-6px);}
@@ -304,5 +346,9 @@ transform-origin:bottom right;
 
 .ground{
 bottom:28px;
+}
+
+.mobile-prompt{
+display:block;
 }
 }

